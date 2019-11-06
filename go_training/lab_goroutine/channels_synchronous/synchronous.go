@@ -18,7 +18,7 @@ func main(){
   c1 :=add(1,100)
   c2 :=add(101,200)
   c3 :=add(201,300)
-  
+
   msg1:=<-c1
   msg2:=<-c2
   msg3:=<-c3

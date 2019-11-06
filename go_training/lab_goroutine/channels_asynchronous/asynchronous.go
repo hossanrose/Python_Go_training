@@ -23,7 +23,7 @@ func main() {
     var top int
     var numOfroutine int = (inVal / 100) + 1
     fmt.Printf("I will generate %d \n ",numOfroutine)
-    var jump = inVal % 100
+    var jump = inVal / 100
     var wg sync.WaitGroup
     ch_sum := make(chan int, jump)
     for i := 1; i <= jump; i++ {
@@ -36,6 +36,7 @@ func main() {
      total := 0
      for i :=0 ; i <jump;i++ {
        total += <-ch_sum
+			 fmt.Println(total)
      }
    fmt.Println(total)
   }
