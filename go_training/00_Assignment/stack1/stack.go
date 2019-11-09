@@ -4,9 +4,11 @@ import (
   "fmt"
   "math/rand"
   "time"
+  "sync"
 )
 
 type Array []int
+var wg sync.WaitGroup
 
 type Elementin interface{
   push(int) Array
@@ -46,7 +48,7 @@ func random_num() int{
 }
 
 func producer(ch chan Array,id int) {
-
+  defer wg.Done()
   rand:=random_num()
   //fmt.Println( time.Now().Nanosecond(), "Push--",id,"--into stack:",rand )
   select {
@@ -63,11 +65,20 @@ func producer(ch chan Array,id int) {
 }
 
 func consumer(ch chan Array,id int) {
-    temp:=<-ch
+  defer wg.Done()
+  select {
+  case temp:=<-ch:
     //fmt.Println(time.Now().Nanosecond(),"POP--",id,"--Before:", temp)
-    arr:=stack_pop(temp)
-    fmt.Println(time.Now().Nanosecond(),"POP--",id,"--After:", arr)
-    ch <- arr
+    if len(temp) >0{
+      arr:=stack_pop(temp)
+      fmt.Println(time.Now().Nanosecond(),"POP--",id,"--After:", arr)
+      if len(arr) >0{
+        ch <- arr
+      }
+    }else{
+      fmt.Println("Nothing to pop")
+    }
+  }
 }
 
 func main(){
@@ -90,10 +101,10 @@ func main(){
   num :=50
 
   for i:=0;i<num;i++{
+    wg.Add(2)
     go producer(ch,i)
-
     //time.Sleep(1*time.Second)
-
-     go consumer(ch,i)
-}
+    go consumer(ch,i)
+ }
+ wg.Wait()
 }
