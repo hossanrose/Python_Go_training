@@ -7,39 +7,31 @@ import (
   "sync"
 )
 
-type Array []int
+type Array struct{
+     x []int
+  }
 var wg sync.WaitGroup
 
-type Elementin interface{
+type Arrayin interface{
   push(int) Array
-}
-
-type Elementout interface{
   pop() Array
 }
 
 func (array Array) push(element int) Array{
-  array = append(array, element )
+  array.x = append(array.x, element )
   return array
 }
 
 func (array Array) pop() Array{
-  if len(array) > 0{
-    fmt.Println(time.Now().Nanosecond(),"Popped Element :",array[len(array)-1])
-    array = array[:len(array)-1]
-    //fmt.Println(array)
-
-    return array
-  }else{
-    return array
-  }
-
+  fmt.Println(time.Now().Nanosecond(),"Popped Element :",array.x[len(array.x)-1])
+  array.x = array.x[:len(array.x)-1]
+  return array
 }
 
-func stack_push(element Elementin, x int) Array{
+func stack_push(element Arrayin, x int) Array{
   return element.push(x)
 }
-func stack_pop(element Elementout) Array{
+func stack_pop(element Arrayin) Array{
   return element.pop()
 }
 func random_num() int{
@@ -50,7 +42,6 @@ func random_num() int{
 func producer(ch chan Array,id int) {
   defer wg.Done()
   rand:=random_num()
-  //fmt.Println( time.Now().Nanosecond(), "Push--",id,"--into stack:",rand )
   select {
   case test:= <- ch:
     arr:=stack_push(test,rand)
@@ -59,7 +50,7 @@ func producer(ch chan Array,id int) {
   default:
     var temp Array
     arr:=stack_push(temp,rand)
-    fmt.Println(time.Now().Nanosecond(),"PUSH--",id,"--Afewrwetter:", arr )
+    fmt.Println(time.Now().Nanosecond(),"PUSH--",id,"--After:", arr )
     ch <- arr
   }
 }
@@ -68,24 +59,23 @@ func consumer(ch chan Array,id int) {
   defer wg.Done()
   select {
   case temp:=<-ch:
-    //fmt.Println(time.Now().Nanosecond(),"POP--",id,"--Before:", temp)
-    if len(temp) >0{
-      arr:=stack_pop(temp)
-      fmt.Println(time.Now().Nanosecond(),"POP--",id,"--After:", arr)
-      if len(arr) >0{
-        ch <- arr
-      }
-    }else{
-      fmt.Println("Nothing to pop")
+  //fmt.Println(time.Now().Nanosecond(),"POP--",id,"--Before:", temp)
+  if len(temp.x) >0{
+    arr:=stack_pop(temp)
+    fmt.Println(time.Now().Nanosecond(),"POP--",id,"--After:", arr)
+    if len(arr.x) >0{
+      ch <- arr
     }
+  }else{
+    fmt.Println("Nothing to pop")
   }
+ }
 }
-
 func main(){
 //NON parallel
   fmt.Println("========Begin non Parallel array stack========")
-  var arr Array
-  fmt.Println(arr)
+  var arr= Array{}
+  //fmt.Println(arr)
   arr=stack_push(arr,29)
   fmt.Println(arr)
   arr=stack_push(arr,24)
@@ -94,17 +84,19 @@ func main(){
   fmt.Println(arr)
   arr=stack_pop(arr)
   fmt.Println(arr)
-  fmt.Println("========Begin non Parallel array stack========")
+  fmt.Println("========End non Parallel array stack========")
+
 
 // Parallel
+  fmt.Println("========Begin Parallel array stack========")
   ch :=make(chan Array)
-  num :=50
-
+  num :=500
   for i:=0;i<num;i++{
     wg.Add(2)
     go producer(ch,i)
-    //time.Sleep(1*time.Second)
+    //time.Sleep(1 * time.Second)
     go consumer(ch,i)
- }
- wg.Wait()
+  }
+  wg.Wait()
+  fmt.Println("========End Parallel array stack========")
 }
