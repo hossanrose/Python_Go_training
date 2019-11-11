@@ -4,8 +4,8 @@ import (
 )
 
 type person struct {
+  name    string
   age       int
-  weight    int
   counter   int
   next      *person
 }
@@ -13,13 +13,14 @@ type person struct {
 type myStack interface {
     removeNodeEnd() *person
     addNodeEnd(*person) *person
-    //setSize (int)
+  //  setSize (int)
 }
+
 
 
 func main() {
   //NONparallel
-  mike := &person{33, 200, 1, nil}
+  mike := &person{"mike",33, 1, nil}
   personList := mike
   //greg := &person{34, 443, 2, nil}
   //james := &person{45, 554, 3, nil}
@@ -31,15 +32,21 @@ func main() {
   personList = stack_pop(personList)
   printList(personList)
   //Parallel
-  ch :=make(chan person)
+
+  ch :=make(chan *person)
   num :=5
 
   for i:=0;i<num;i++{
     go producer_linkedlist(ch,i)
-    time.Sleep(1*time.Second)
-    go consumer_linkedlist(ch,i)
-    time.Sleep(1 * time.Second)
+    //time.Sleep(1*time.Second)
+    //go consumer_linkedlist(ch,i)
+    //time.Sleep(1 * time.Second)
  }
+
+
+}
+
+func producer_linkedlist(ch chan *person, id int){
 
 }
 func printList(personList *person) {
