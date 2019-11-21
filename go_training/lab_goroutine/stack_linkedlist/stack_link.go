@@ -22,10 +22,10 @@ func main() {
   //NONparallel
   mike := &person{"mike",33, 1, nil}
   personList := mike
-  //greg := &person{34, 443, 2, nil}
+  greg := &person{"greg", 443, 2, nil}
   //james := &person{45, 554, 3, nil}
   //marshall := &person{56, 123, 4, nil}
-  //personList = stack_push(greg, personList)
+  personList = stack_push(greg, personList)
   //personList = stack_push(james, personList)
   //personList = stack_push(marshall, personList)
   printList(personList)
