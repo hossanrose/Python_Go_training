@@ -10,4 +10,4 @@ print(my_method(2,3))
 
 name="Hossan"
 
-print(f"My name is {name}") # formatting requires "f" in the starting and variables inside "{}"
+print("My name is {}".format(name)) # formatting requires "f" in the starting and variables inside "{}"
